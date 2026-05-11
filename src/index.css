@@ -1,0 +1,14 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css'; // Общие стили (если есть)
+import App from './App'; // Импорт вашего основного компонента
+
+// Находим HTML-элемент с id="root" (он находится в public/index.html)
+const root = ReactDOM.createRoot(document.getElementById('root'));
+
+// Отрисовываем приложение
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
