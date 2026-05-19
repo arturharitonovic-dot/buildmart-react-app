@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import './App.css';
 
@@ -164,10 +164,29 @@ const ProductPage = ({ addToCart }) => {
           <RenderStars rating={product.rating} />
           <div className="big-price">${product.price} <small>/ unit</small></div>
           
+          {/* Обновленный блок с бэйджами */}
           <div className="utility-badges">
-            <div className="u-badge"><span>🛡️</span> Quality Material</div>
-            <div className="u-badge"><span>🚚</span> Fast Delivery</div>
-            <div className="u-badge"><span>✅</span> Warranty</div>
+            <div className="u-badge">
+              <span className="badge-icon">🛡️</span>
+              <div className="badge-text">
+                <span className="badge-title">Quality Assured</span>
+                <span className="badge-subtitle">Premium grade material</span>
+              </div>
+            </div>
+            <div className="u-badge">
+              <span className="badge-icon">🚚</span>
+              <div className="badge-text">
+                <span className="badge-title">Fast Delivery</span>
+                <span className="badge-subtitle">2-5 business days</span>
+              </div>
+            </div>
+            <div className="u-badge">
+              <span className="badge-icon">✅</span>
+              <div className="badge-text">
+                <span className="badge-title">Warranty</span>
+                <span className="badge-subtitle">30-day guarantee</span>
+              </div>
+            </div>
           </div>
 
           <div className="quantity-selector">
@@ -192,18 +211,20 @@ const ProductPage = ({ addToCart }) => {
           <div className="specs-card">
             <div className="specs-header" onClick={() => setShowSpecs(!showSpecs)}>
               <h4>Technical Specifications</h4>
-              <span className="toggle-icon">{showSpecs ? '▲' : '▼'}</span>
+              <span className={`toggle-icon ${showSpecs ? 'open' : ''}`}>▼</span>
             </div>
-            {showSpecs && (
-              <div className="specs-grid">
-                {Object.entries(product.specs).map(([key, value]) => (
-                  <div className="spec-item" key={key}>
-                    <label>{key}</label>
-                    <span>{value}</span>
-                  </div>
-                ))}
+            <div className={`specs-content ${showSpecs ? 'open' : ''}`}>
+              <div className="specs-grid-wrapper">
+                <div className="specs-grid">
+                  {Object.entries(product.specs).map(([key, value]) => (
+                    <div className="spec-item" key={key}>
+                      <label>{key}</label>
+                      <span>{value}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
@@ -226,7 +247,8 @@ const Header = ({ cartCount }) => (
   <header className="header">
     <div className="header-container">
       <Link className="logo" to="/">
-        <div className="logo-icon">BM</div> BuildMart
+        <div className="logo-icon">BM</div> 
+        <span className="logo-text">BuildMart</span>
       </Link>
       <nav className="nav">
         <Link to="/">Products</Link>
@@ -250,7 +272,8 @@ const Footer = () => (
     <div className="footer-container">
       <div className="footer-brand">
         <div className="logo white">
-          <div className="logo-icon">BM</div> BuildMart
+          <div className="logo-icon">BM</div> 
+          <span className="logo-text">BuildMart</span>
         </div>
         <p>Premium construction supplies for all your projects.</p>
         <div className="social-links">
@@ -425,7 +448,6 @@ const CartPage = ({ cartItems, updateQuantity, removeItem }) => {
     }
   };
 
-  // Налог теперь всегда считается от подытога (не уменьшается при скидке)
   const tax = subtotal * 0.08;
   const total = subtotal - discount + tax;
 
@@ -534,8 +556,16 @@ const CartPage = ({ cartItems, updateQuantity, removeItem }) => {
 };
 
 export default function App() {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem('buildmart_cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+  
   const [toast, setToast] = useState({ visible: false, message: '' });
+
+  useEffect(() => {
+    localStorage.setItem('buildmart_cart', JSON.stringify(cart));
+  }, [cart]);
 
   const addToCart = (product) => {
     setCart(prevCart => {
