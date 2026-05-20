@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useParams } from 'react-router-dom';
 import './App.css';
 
 const allProducts = [
